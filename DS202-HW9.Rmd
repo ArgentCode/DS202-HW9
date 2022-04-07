@@ -1,0 +1,19 @@
+---
+title: "DS202 HW9"
+author: "Craig Orman"
+date: "4/7/2022"
+output: html_document
+---
+
+
+Link to the [Github Project](https://github.com/ArgentCode/DS202-HW9 "Github Project")
+Homework is detailed in [Slides 7-9](https://yumouqiu.github.io/DS202-Spring2022/Practice/practice04.html)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lubridate)
+library(tidyverse)
+```
