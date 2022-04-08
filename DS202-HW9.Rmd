@@ -16,4 +16,107 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(lubridate)
 library(tidyverse)
+av = read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv", stringsAsFactors = FALSE)
+
 ```
+
+### Question 1 
+The avenger data consists of ten columns for each avenger called Death[1-5] to Return[1-5]
+
+Get the data into a format where the five columns for Death[1-5] are replaced by two columnes: Time, and Death. Time should be a number between 1 and 5 (look into the function parse_number); Death is a categorical variables with values “yes”, “no” and "". Call the result deaths.
+
+Similarly, deal with the returns of characters.
+
+```{r}
+av0 = av %>% filter(Name.Alias != "")
+av1 = av0 %>% gather(key = time, value = death, c(11, 13, 15, 17, 19)) %>% 
+  select(Name.Alias, time, death) %>%
+  mutate(time = parse_number(time))
+av2 = av0 %>% gather(key = time, value = return, c(12, 14, 16, 18, 20)) %>% 
+  select(Name.Alias, time, return) %>%
+  mutate(time = parse_number(time))
+av.neat = left_join(av1, av2, by = c("Name.Alias", "time"))
+av0 = av0 %>% filter(Name.Alias != "Vance Astrovik")
+av1 = av0 %>% gather(key = time, value = death, c(11, 13, 15, 17, 19)) %>% 
+  select(Name.Alias, time, death) %>%
+  mutate(time = parse_number(time))
+av2 = av0 %>% gather(key = time, value = return, c(12, 14, 16, 18, 20)) %>% 
+  select(Name.Alias, time, return) %>%
+  mutate(time = parse_number(time))
+av.neat = left_join(av1, av2, by = c("Name.Alias", "time"))
+```
+
+#### 1 answer
+
+We completed this question as an inclass lab.
+
+### Question 2
+
+Each team member picks one of the statements in the FiveThirtyEight [analysis](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) and fact checks it based on the data. Use dplyr functionality whenever possible.
+
+Upload your answers and the code to the repository. Discuss and refine answers as a team.
+
+#### Craig's Question:
+
+"But you can only tempt death so many times. There’s a 2-in-3 chance that a member of the Avengers returned from their first stint in the afterlife, but only a 50 percent chance they recovered from a second or third death." This is a claim made from the writer of the article. Seems like it will involve a variety of tasks to find the answer to. 
+
+Question: What is the chance an Avenger will return after they die the first, second, and third time they die. That's a weird research question but okay.
+
+```{r}
+av.neat3 = av.neat %>% mutate(
+  death = as.factor(death),
+  return = as.factor(return)
+)
+av.neat3 = av.neat3 %>% filter(death == "YES")
+first.death.rate = av.neat3 %>% filter(time == 1) %>% filter(return == "YES") %>% count() / av.neat3 %>% filter(time == 1)%>% count() 
+first.death.rate$deaths = av.neat3 %>% filter(time == 1)%>% count()
+first.death.rate$returns = av.neat3 %>% filter(time == 1) %>% filter(return == "YES") %>% count()
+first.death.rate$time = 1
+
+first.death.rate2 = av.neat3 %>% filter(time == 2) %>% filter(return == "YES") %>% count() / av.neat3 %>% filter(time == 2)%>% count() 
+first.death.rate2$deaths = av.neat3 %>% filter(time == 2)%>% count()
+first.death.rate2$returns = av.neat3 %>% filter(time == 2) %>% filter(return == "YES") %>% count()
+first.death.rate2$time = 2
+
+first.death.rate3 = av.neat3 %>% filter(time == 3) %>% filter(return == "YES") %>% count() / av.neat3 %>% filter(time == 3)%>% count()
+first.death.rate3$deaths = av.neat3 %>% filter(time == 3)%>% count()
+first.death.rate3$returns = av.neat3 %>% filter(time == 3) %>% filter(return == "YES") %>% count() 
+first.death.rate3$time = 3
+
+first.death.rate4 = av.neat3 %>% filter(time == 4) %>% filter(return == "YES") %>% count() / av.neat3 %>% filter(time == 4)%>% count() 
+first.death.rate4$deaths = av.neat3 %>% filter(time == 4)%>% count()
+first.death.rate4$returns = av.neat3 %>% filter(time == 4) %>% filter(return == "YES") %>% count()
+first.death.rate4$time = 4
+
+first.death.rate5 = av.neat3 %>% filter(time == 5) %>% filter(return == "YES") %>% count() / av.neat3 %>% filter(time == 5)%>% count() 
+first.death.rate5$deaths = av.neat3 %>% filter(time == 5)%>% count()
+first.death.rate5$returns = av.neat3 %>% filter(time == 5) %>% filter(return == "YES") %>% count()
+first.death.rate5$time = 5
+
+results = first.death.rate
+results = rbind(results, first.death.rate2)
+results = rbind(results, first.death.rate3)
+results = rbind(results, first.death.rate4)
+results = rbind(results, first.death.rate5)
+
+```
+
+
+
+```{r}
+results = av.neat %>%
+  group_by(time) %>%
+  summarise( total.num = n(),
+             real.death = sum(death == "YES"),
+             fake.death = sum(death == "NO"),
+             missing = sum(death == ""),
+             real.return = sum(return == "YES"),
+             no.return = sum(return == "NO"),
+             return.rate = real.return/real.death
+             )
+
+```
+
+
+
+
