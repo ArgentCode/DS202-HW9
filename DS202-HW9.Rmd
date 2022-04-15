@@ -116,7 +116,17 @@ results = av.neat %>%
              )
 
 ```
+#### Ngoc's fact check:
+Statement from the article: "Out of 173 listed Avengers, my analysis found that 69 had died at least one time after they joined the team That’s about 40 percent of all people who have ever signed on to the team. Let’s put it this way: If you fall from four or five stories up, there’s a 50 percent chance you die. Getting a membership card in the Avengers is roughly like jumping off a four-story building."
 
+```{r}
+# number of death at least one time
 
+av.neat3 = av.neat3 %>% filter(death == "YES")
+num_death_1 = av.neat3 %>% filter(time == 1) %>% filter(return == "YES") %>% count()
+num_death_1
+
+```
+So actually just 44 over 173 Avengers died at least once.
 
 
